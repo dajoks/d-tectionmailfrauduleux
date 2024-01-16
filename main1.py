@@ -1,11 +1,10 @@
 import enchant
 import re
 
-
 def regardergrammaire(text):
-    #Vérification des erreurs grammaticales
+    # Vérification des erreurs grammaticales
     grammaire_erreur = 0
-    #vérification des phrases commençant par une majuscule et se terminant par un point.
+    # Vérification des phrases commençant par une majuscule et se terminant par un point.
     sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', text)
     for sentence in sentences:
         if not (sentence[0].isupper() and sentence[-1] in ['.', '?']):
@@ -16,31 +15,28 @@ def regardergrammaire(text):
 def regardermail(email):
     # Vérification des adresses e-mail suspectes
     mailsuspicieux = ['codebanquaire', 'phishing', 'paiement', 'azerty', 'qwerty']
-    for pattern in mailsuspicieux:
-        if pattern in email:
-            return True
-
-    return False
+    return any(pattern in email for pattern in mailsuspicieux)
 
 def demande_paiement(text):
-    motspaiement = ['demande de paiement', 'code banquaire', 'crise financière', 'emprunt', 'dette', 'retrait', 'gains',
+    motspaiement = ['demande de paiement', 'code bancaire', 'crise financière', 'emprunt', 'dette', 'retrait', 'gains',
                  'gagner', 'loto', 'paiement']
     return any(mot in text.lower() for mot in motspaiement)
 
 # Exemple d'utilisation
-email_texte = "Bonjour jee suIs les homme qyfvbqyv"
-email = "support@karim.com"
+email_texte = input("Rentrez ici le texte de votre mail : ")
+email = input("Ici mettez l'expéditeur du mail : ")
 
 grammaire_erreur = regardergrammaire(email_texte)
 mailsuspect = regardermail(email)
-contient_demande_paiement = demande_paiement(email_texte)
+demande_paiement_texte = demande_paiement(email_texte)
+demande_paiement_mail = demande_paiement(email)
 
 virustotal = "https://www.virustotal.com/gui/home/url"
 
 if grammaire_erreur != 0:
-    print("Il y a " + str(grammaire_erreur) + " erreurs de grammaire")
+    print(f"Il y a {grammaire_erreur} erreurs de grammaire")
 
-if grammaire_erreur > 3 or int(mailsuspect) or contient_demande_paiement:
-    print("Ce mail est suspect. Veuillez faire preuve de prudence. S'il y a un lien dans le mail. Copiez-collez le lien sur le site " + virustotal + " pour une analyse approfondie.")
+if grammaire_erreur > 3 or mailsuspect or demande_paiement_texte or demande_paiement_mail:
+    print(f"Ce mail est suspect. Veuillez faire preuve de prudence. S'il y a un lien dans le mail, copiez-collez le lien sur le site {virustotal} pour une analyse approfondie.")
 else:
-    print("Ce mail est correct. Mais faites quand même attention s'il y a un lien dans le mail. Copiez-collez le lien sur le site " + virustotal + " pour une analyse approfondie.")
+    print(f"Ce mail est correct. Mais faites quand même attention s'il y a un lien dans le mail. Copiez-collez le lien sur le site {virustotal} pour une analyse approfondie.")
